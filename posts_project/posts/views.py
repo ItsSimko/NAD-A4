@@ -59,6 +59,7 @@ def load_posts_data_view(request, num_posts):
 
     return JsonResponse({'data': data[lower:upper], 'size': size})
 
+@login_required
 def like_unlike_post(request):
     if request.method == 'POST':
         pk = request.POST.get('pk')
@@ -72,6 +73,7 @@ def like_unlike_post(request):
             post_obj.liked.add(request.user)
 
     return JsonResponse({'liked': liked, 'count': post_obj.like_count})
+
 
 def post_detail_data_view(request, pk):
     obj = Post.objects.get(pk=pk)
@@ -92,6 +94,7 @@ def post_detail(request, pk):
 
     return render(request, 'posts/detail.html', {'obj': obj, 'form': form})
 
+@login_required
 @action_permission
 def update_post(request, pk):
     obj = Post.objects.get(pk=pk)
@@ -107,6 +110,7 @@ def update_post(request, pk):
         'body': obj.body,
     })
 
+@login_required
 @action_permission
 def delete_post(request, pk):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -116,6 +120,7 @@ def delete_post(request, pk):
     
     return JsonResponse({'msg': 'Denied.'})
 
+@login_required
 def image_upload_view(request):
     if request.method == 'POST':
         img = request.FILES.get('file')
