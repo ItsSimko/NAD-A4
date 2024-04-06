@@ -31,17 +31,15 @@ const getDatas = () => {
                 </div>
                 <div class="col">
                     <form class="unlike-like-form" data-form-id="${el.id}">
-                        (% csrf_token %)
-                        <button href="#" class="btn btn-primary" id="like-unlike-${
+                        <button class="btn btn-primary" id="like-unlike-${
                           el.id
-                        }></button>
+                        }">${
+                          el.liked
+                            ? `Unlike (${el.like_count})`
+                            : `Like (${el.like_count})`
+                        }</button>
                     </form>
 
-                    <button href="#" class="btn btn-primary">${
-                      el.liked
-                        ? `Unlike (${el.like_count})`
-                        : `Like (${el.like_count})`
-                    }</button>
                 </div>
                     
                 </div>
@@ -50,6 +48,7 @@ const getDatas = () => {
             </div>
             `;
         });
+        likeUnlikePosts();
       }, 250);
 
       if (response.size === 0) {
@@ -84,25 +83,23 @@ const getCookie = (name) => {
 const csrftoken = getCookie("csrftoken");
 
 const likeUnlikePosts = () => {
-  const likeUnlikePosts = { ...document.querySelectorAll(".unlike-like-form") };
+  const likeUnlikePosts = [...document.querySelectorAll(".unlike-like-form")];
   likeUnlikePosts.forEach((el) => {
     el.addEventListener("submit", (e) => {
       e.preventDefault();
-      const clickedId = el.target.getAttribute("data-form-id");
-      const clieckedBtn = document.getElementById(`#like-unlike-${postId}`);
+      const clickedId = el.getAttribute("data-form-id");
+      const clickedBtn = document.getElementById(`like-unlike-${clickedId}`);
       $.ajax({
         type: "POST",
-        url: "",
+        url: "like-unlike/",
         data: {
-          "X-CSRFToken": csrftoken,
-          postId: postId,
+          csrfmiddlewaretoken: csrftoken,
+          pk: clickedId,
         },
         success: function (response) {
-          if (response.liked) {
-            el.nextElementSibling.textContent = `Unlike (${response.like_count})`;
-          } else {
-            el.nextElementSibling.textContent = `Like (${response.like_count})`;
-          }
+          clickedBtn.textContent = response.liked
+            ? `Unlike (${response.count})`
+            : `Like (${response.count})`;
         },
         error: function (e) {},
       });
