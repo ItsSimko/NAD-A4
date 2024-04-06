@@ -203,10 +203,6 @@ closeClass.forEach((el) => {
     if (dropzone.classList.contains("not-visible"))
       dropzone.classList.add("not-visible");
   });
-
-  const myDropzone = Dropzone.forElement("#dropzone");
-
-  myDropzone.removeAllFiles(true);
 });
 
 dropzone.autoDiscover = false;
