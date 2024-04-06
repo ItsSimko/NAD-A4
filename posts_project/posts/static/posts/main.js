@@ -1,5 +1,3 @@
-console.log("Hello World from posts/static/posts/main.js");
-
 const postBox = document.getElementById("posts-body");
 const spinnerBox = document.getElementById("spinnerBox");
 const loadBtn = document.getElementById("load-btn");
@@ -127,6 +125,10 @@ loadBtn.addEventListener("click", () => {
   getDatas();
 });
 
+const addBtn = document.getElementById("add-btn");
+const closeClass = [...document.getElementsByClassName("add-modal-close")];
+const dropzone = document.getElementById("dropzone");
+
 postForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -165,7 +167,7 @@ postForm.addEventListener("submit", (e) => {
       `
       );
       likeUnlikePosts();
-      $("#addPostModal").modal("hide");
+      //$("#addPostModal").modal("hide");
 
       //getDatas();
       title.value = "";
@@ -184,7 +186,20 @@ const deleted = localStorage.getItem("title");
 
 if (deleted) {
   handleAlerts("success", "Post deleted successfully");
-  localStorage.remove("title");
+  localStorage.removeItem("title");
 }
+
+addBtn.addEventListener("click", () => {
+  dropzone.classList.remove("not-visible");
+});
+
+closeClass.forEach((el) => {
+  el.addEventListener("click", () => {
+    titleInput.value = "";
+    bodyInput.value = "";
+    if (dropzone.classList.contains("not-visible"))
+      dropzone.classList.add("not-visible");
+  });
+});
 
 getDatas();

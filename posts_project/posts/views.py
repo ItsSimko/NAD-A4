@@ -1,9 +1,10 @@
 
 from django.shortcuts import render
-from .models import Post
+from .models import Post, Photo
 from django.http import JsonResponse
 from .forms import PostForm
 from profiles.models import Profile
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -106,3 +107,12 @@ def delete_post(request, pk):
     obj = Post.objects.get(pk=pk)
     obj.delete()
     return JsonResponse({})
+
+def image_upload_view(request):
+    if request.method == 'POST':
+        img = request.FILES.get('file')
+        new_post_id = request.POST.get('new_post_id')
+        post = Post.objects.get(pk=new_post_id)
+        Photo.objects.create(post=post, image=img)
+
+    return HttpResponse()
