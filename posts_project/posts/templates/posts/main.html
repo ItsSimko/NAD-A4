@@ -1,21 +1,20 @@
 {% extends "base.html" %} 
-{% load static %}
 
-{% block scripts %} 
-    <script src="{% static 'posts/main.js' %}" defer></script>
+{% load static %} 
+{% block scripts %}
+<script src="{% static 'posts/main.js' %}" defer></script>
 {% endblock scripts %}
+
 {% block title %} 
-Posts
+    Posts 
 {% endblock title %} 
 
-{% block content %} 
-    {% for obj in qs %}
-
-        {{obj.title}} - {{obj.body}} <br>
-
-    {% endfor %}
-    <div id="posts-body">
-
-        
-    </div>
+{% block content %}
+<div id="posts-body"></div>
+<div id="spinnerBox" class="text-center">
+    <div class="spinner-border" role="status"></div>
+  </div>
+<div class="text-center mb-3" id="end-box">
+  <button class="btn btn-primary" id="load-btn">Load more</button>
+</div>
 {% endblock content %}
