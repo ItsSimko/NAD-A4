@@ -9,20 +9,24 @@ from profiles.models import Profile
 
 def post_list_and_create(request):
     form = PostForm(request.POST or None)
-    #qs = Post.objects.all()
 
-    if request.method == 'POST':
-        if form.is_valid():
-            author = Profile.objects.get(user=request.user)
+    if form.is_valid():
+        author = Profile.objects.get(user=request.user)
 
-            instance = form.save(commit=False)
-            instance.author = author
-            instance.save()
-            form = PostForm()
+        instance = form.save(commit=False)
+        instance.author = author
+        instance.save()
+        form = PostForm()
+        return JsonResponse({
+            'title': instance.title,
+            'body': instance.body,
+            'author': instance.author.user.username,
+            'created': instance.created,
+            'id': instance.id,
+        })
 
     context = {
         'form': form,
-        #'qs': qs,
     }
 
     return render(request, 'posts/main.html', context)
@@ -64,3 +68,41 @@ def like_unlike_post(request):
             post_obj.liked.add(request.user)
 
     return JsonResponse({'liked': liked, 'count': post_obj.like_count})
+
+def post_detail_data_view(request, pk):
+    obj = Post.objects.get(pk=pk)
+    data = {
+        'id': obj.id,
+        'title': obj.title,
+        'body': obj.body,
+        'author': obj.author.user.username,
+        'logged_in': request.user.username
+    }
+
+    return JsonResponse({'data': data})
+
+def post_detail(request, pk):
+    obj = Post.objects.get(pk=pk)
+    form = PostForm()
+
+
+    return render(request, 'posts/detail.html', {'obj': obj, 'form': form})
+
+def update_post(request, pk):
+    obj = Post.objects.get(pk=pk)
+
+    new_title = request.POST.get('title')
+    new_body = request.POST.get('body')
+    obj.title = new_title
+    obj.body = new_body
+    obj.save()
+
+    return JsonResponse({
+        'title': obj.title,
+        'body': obj.body,
+    })
+
+def delete_post(request, pk):
+    obj = Post.objects.get(pk=pk)
+    obj.delete()
+    return JsonResponse({})

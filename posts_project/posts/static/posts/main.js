@@ -5,6 +5,14 @@ const spinnerBox = document.getElementById("spinnerBox");
 const loadBtn = document.getElementById("load-btn");
 const endBox = document.getElementById("end-box");
 
+const postForm = document.getElementById("post-form");
+const title = document.getElementById("id_title");
+const body = document.getElementById("id_body");
+const alertBox = document.getElementById("alert-box");
+const csrf = document.getElementsByName("csrfmiddlewaretoken");
+
+const url = window.location.href;
+
 let visible = 3;
 
 const getDatas = () => {
@@ -13,6 +21,10 @@ const getDatas = () => {
     url: `getPosts/${visible}`,
     success: function (response) {
       const data = response.data;
+
+      console.log("hello");
+      console.log(data);
+      console.log(response.size);
 
       setTimeout(() => {
         spinnerBox.classList.add("not-visible");
@@ -27,7 +39,7 @@ const getDatas = () => {
                 <div clas="card-footer">
                 <div class="row">
                 <div class="col-1">
-                    <a href="#" class="btn btn-primary">Details</a>
+                    <a href="${url}${el.id}" class="btn btn-primary">Details</a>
                 </div>
                 <div class="col">
                     <form class="unlike-like-form" data-form-id="${el.id}">
@@ -60,7 +72,9 @@ const getDatas = () => {
         loadBtn.classList.remove("not-visible");
       }
     },
-    error: function (e) {},
+    error: function (e) {
+      console.log("error", e);
+    },
   });
 };
 
@@ -112,5 +126,65 @@ loadBtn.addEventListener("click", () => {
   visible += 3;
   getDatas();
 });
+
+postForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  $.ajax({
+    type: "POST",
+    url: "",
+    data: {
+      csrfmiddlewaretoken: csrf[0].value,
+      title: title.value,
+      body: body.value,
+    },
+    success: function (response) {
+      console.log("s", response);
+      postBox.insertAdjacentHTML(
+        `afterbegin`,
+        `
+      <div class="card mb-2">
+                <div class="card-body">
+                    <h5 class="card-title">${response.title}</h5>
+                    <p class="card-text">${response.body}</p>
+                </div>
+                <div clas="card-footer">
+                    <div class="row">
+                        <div class="col-1">
+                            <a href="${url}${response.id}" class="btn btn-primary">Details</a>
+                        </div>
+                        <div class="col">
+                            <form class="unlike-like-form" data-form-id="${response.id}">
+                                <button class="btn btn-primary" id="like-unlike-${response.id}">Like (0)</button>
+                            </form>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+      `
+      );
+      likeUnlikePosts();
+      $("#addPostModal").modal("hide");
+
+      //getDatas();
+      title.value = "";
+      body.value = "";
+
+      handleAlerts("success", "Post created successfully");
+    },
+    error: function (e) {
+      console.log("error", e);
+      handleAlerts("danger", "Oops, something went wrong!");
+    },
+  });
+});
+
+const deleted = localStorage.getItem("title");
+
+if (deleted) {
+  handleAlerts("success", "Post deleted successfully");
+  localStorage.remove("title");
+}
 
 getDatas();
