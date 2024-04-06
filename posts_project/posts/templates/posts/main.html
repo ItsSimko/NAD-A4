@@ -43,7 +43,7 @@ Posts
             <button type="submit" class="btn btn-success add-modal-close" id="add-btn">+ Create</button>
           </div>
         </form>
-        <form action="/upload" class="dropzone not-visible" id="dropzone">
+        <form action="upload/" class="dropzone not-visible" id="dropzone">
             {% csrf_token %}
           <div class="fallback">
             <input name="file" type="file" multiple />

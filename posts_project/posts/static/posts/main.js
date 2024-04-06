@@ -12,6 +12,7 @@ const csrf = document.getElementsByName("csrfmiddlewaretoken");
 const url = window.location.href;
 
 let visible = 3;
+let newPostId = 0;
 
 const getDatas = () => {
   $.ajax({
@@ -173,6 +174,8 @@ postForm.addEventListener("submit", (e) => {
       title.value = "";
       body.value = "";
 
+      newPostId = response.id;
+
       handleAlerts("success", "Post created successfully");
     },
     error: function (e) {
@@ -200,6 +203,24 @@ closeClass.forEach((el) => {
     if (dropzone.classList.contains("not-visible"))
       dropzone.classList.add("not-visible");
   });
+
+  const myDropzone = Dropzone.forElement("#dropzone");
+
+  myDropzone.removeAllFiles(true);
+});
+
+dropzone.autoDiscover = false;
+const myDropzone = new Dropzone("#dropzone", {
+  url: "upload/",
+  init: function () {
+    this.on("sending", function (file, xhr, formData) {
+      formData.append("csrfmiddlewaretoken", csrf[0].value);
+      formData.append("new_post_id", newPostId);
+    });
+  },
+  maxFiles: 5,
+  maxFilesize: 4,
+  acceptedFiles: ".png,.jpg,.jpeg",
 });
 
 getDatas();

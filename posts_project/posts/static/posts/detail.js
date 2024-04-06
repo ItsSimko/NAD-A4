@@ -18,10 +18,6 @@ const bodyInput = document.getElementById("id_body");
 
 const csrf = document.getElementsByName("csrfmiddlewaretoken");
 
-backButton.addEventListener("click", () => {
-  window.history.back();
-});
-
 $.ajax({
   type: "GET",
   url: `${url}`,
